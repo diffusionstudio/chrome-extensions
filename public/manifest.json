@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "diffusion-studio-chrome-extension",
+  "version": "1.0",
+  "description": "",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "externally_connectable": {
+    "matches": [
+      "*://127.0.0.1:*/*",
+      "https://*.diffusion.studio/*"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://127.0.0.1:*/*",
+        "https://*.diffusion.studio/*"
+      ]
+    }
+  ],
+  "permissions": [
+    "scripting",
+    "tabs",
+    "activeTab",
+    "nativeMessaging"
+  ],
+  "host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "icons": {
+    "16": "images/16x16.png",
+    "32": "images/32x32.png"
+  }
+}
