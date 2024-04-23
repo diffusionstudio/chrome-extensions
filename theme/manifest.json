@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "Diffusion Studio Theme",
+  "version": "1.0",
+  "description": "A minimalist dark theme.",
+  "theme": {
+    "colors": {
+      "frame": [24, 24, 27],
+      "toolbar": [9, 9, 11],
+      "tab_text": [250, 250, 250],
+      "tab_background_text": [161, 161, 170],
+      "ntp_background": [9, 9, 11],
+      "ntp_text": [161, 161, 170],
+      "ntp_link" : [161, 161, 170],
+      "omnibox_background": [9, 9, 11],
+      "omnibox_text": [250, 250, 250]
+    }
+  }
+}
