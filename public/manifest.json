@@ -6,25 +6,25 @@
   "action": {
     "default_popup": "index.html"
   },
-  "externally_connectable": {
-    "matches": [
-      "*://127.0.0.1:*/*",
-      "https://*.diffusion.studio/*"
-    ]
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
   },
   "content_scripts": [
     {
       "matches": [
-        "*://127.0.0.1:*/*",
+        "http://localhost:5173/*",
         "https://*.diffusion.studio/*"
+      ],
+      "js": [
+        "content-script.js"
       ]
     }
   ],
   "permissions": [
     "scripting",
     "tabs",
-    "activeTab",
-    "nativeMessaging"
+    "activeTab"
   ],
   "host_permissions": [
     "https://*/*",

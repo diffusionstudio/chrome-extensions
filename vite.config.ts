@@ -1,33 +1,36 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from "path"
+import path from 'node:path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  esbuild: {
-    keepNames: true
-  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
   build: {
+    minify: false,
+    outDir: 'dist',
+    assetsDir: '.', // output assets into the root of outDir
     rollupOptions: {
+      // Custom Rollup configuration
       input: {
-        'background': "src/background.ts",
-        'content-script': "src/content-script.ts",
+        // Specify entries for your files here
+        'service-worker': 'src/service-worker.ts',
+        'content-script': 'src/content-script.ts',
+        // Add other entry points if needed
+        index: 'index.html'
       },
       output: {
-        entryFileNames: chunkInfo => {
-          return `${chunkInfo.name}.js`
-        }
+        // Preserve specific file names
+        format: 'es',
+        // Override the filenames for service-worker.ts and content-script.ts
+        entryFileNames: '[name].js', // or whatever format you prefer
+        chunkFileNames: '[name]-[hash].js', // include hash for other chunks
+        assetFileNames: '[name]-[hash][extname]', // include hash for assets
       },
-      // No tree-shaking otherwise it removes functions from Content Scripts.
-      treeshake: false
     },
-    // TODO: How do we configured ESBuild to keep functions?
-    minify: false
-  }
+  },
 })
