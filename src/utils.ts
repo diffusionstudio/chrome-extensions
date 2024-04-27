@@ -14,7 +14,7 @@ export const quoraRegex = /^https:\/\/(((?:www\.|(?!www))quora\.com)|((?:www\.|(
 export const redditRegex = /^https:\/\/(((?:www\.|(?!www))reddit\.com))/gim;
 
 /**
- * Match url with known domains
+ * Match string with known url patterns
  */
 export function matchUrl(text: string): UrlMatch {
   // compare with supported urls

@@ -37,6 +37,6 @@ export const queries: Record<UrlMatch, () => string> = {
     return content;
   },
   'UNKNOWN': function () {
-    return ''
+    return document.body.innerText;
   }
 }

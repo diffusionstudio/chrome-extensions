@@ -11,9 +11,11 @@ chrome.runtime.onMessage.addListener(async function (request) {
     active: false,
   });
 
+  // Important! Wait for tab to be loaded
   chrome.tabs.onUpdated.addListener(async function updateHandler(tabId, info) {
     if (info.status !== 'complete' || tabId != tab.id) return;
 
+    // and don't forget to unregister
     chrome.tabs.onUpdated.removeListener(updateHandler);
 
     const res = await chrome.scripting.executeScript({
@@ -21,11 +23,12 @@ chrome.runtime.onMessage.addListener(async function (request) {
       func: queries[match],
     });
 
+    // remove tab when successful
     if (res[0].result) {
       chrome.tabs.remove(tab.id!);
     }
 
-    tab = (await chrome.tabs.query({ url: import.meta.env.VITE_APP_TAB_URL }))?.[0];
+    [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
 
     await chrome.tabs.sendMessage(tab.id!, { type: 'QUERY_TEXT_RESPONSE', content: res[0].result });
   });
