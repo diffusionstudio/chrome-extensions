@@ -26,3 +26,19 @@ export function matchUrl(text: string): UrlMatch {
   }
   return 'UNKNOWN';
 };
+
+/**
+ * Wait until the specified tab has stopped loading
+ */
+export async function loadTab(id?: number): Promise<void> {
+  return new Promise((resolve) => {
+    chrome.tabs.onUpdated.addListener(async function updateHandler(tabId, info) {
+      if (info.status !== 'complete' || tabId != id) return;
+
+      // and don't forget to unregister
+      chrome.tabs.onUpdated.removeListener(updateHandler);
+
+      resolve(undefined);
+    });
+  })
+}
