@@ -1,4 +1,4 @@
-# Extensions Installation Instructions
+# Extension Installation Instructions
 While this extension is pending review in the Chrome Web Store, you can install it manually following these steps:
 
 1. Download the extension as a zip file and unpack it<br>
