@@ -1,8 +1,8 @@
 import { queries } from "./queries";
 import { matchUrl, loadTab } from "./utils";
 
-chrome.runtime.onMessage.addListener(async function (message) {
-  if (message?.type != "QUERY_TEXT" || !message.url || typeof message.url != 'string') return;
+async function handleQueryText(port: chrome.runtime.Port, message: any) {
+  if (!message.url || typeof message.url != 'string') return;
 
   const match = matchUrl(message.url);
 
@@ -24,7 +24,32 @@ chrome.runtime.onMessage.addListener(async function (message) {
     chrome.tabs.remove(tab.id!);
   }
 
-  [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+  port.postMessage({ type: 'QUERY_TEXT_RESPONSE', content: res[0].result });
+}
 
-  await chrome.tabs.sendMessage(tab.id!, { type: 'QUERY_TEXT_RESPONSE', content: res[0].result });
-});
+async function handlePing(port: chrome.runtime.Port, _: any) {
+  port.postMessage({ type: 'PONG' });
+}
+
+function handlePortMessage(port: chrome.runtime.Port) {
+  return async (message: any) => {
+    switch (message?.type) {
+      case 'QUERY_TEXT':
+        handleQueryText(port, message);
+        break;
+      case 'PING':
+        handlePing(port, message);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+function runtimeListener(port: chrome.runtime.Port) {
+  // Listen for messages from the content scripts
+  port.onMessage.addListener(handlePortMessage(port));
+}
+
+// Set up a long-lived connection with the content scripts
+chrome.runtime.onConnect.addListener(runtimeListener);

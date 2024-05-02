@@ -1,16 +1,11 @@
-sessionStorage.setItem("ds.plugin.installed", "true");
-chrome.runtime.onMessage.addListener(
-  function(request, sender) {
-    if (!sender.tab) {
-      window.postMessage(request, "*");
-    }
-  }
-);
 async function handleMessage(event) {
-  if (event.source != window)
+  if (event.source != window || !event.data.type)
     return;
-  if (event.data.type) {
-    await chrome.runtime.sendMessage(event.data);
-  }
+  const port = chrome.runtime.connect({ name: "content-script" });
+  port.postMessage(event.data);
+  port.onMessage.addListener(function(message) {
+    window.postMessage(message, "*");
+    port.disconnect();
+  });
 }
 window.addEventListener("message", handleMessage);

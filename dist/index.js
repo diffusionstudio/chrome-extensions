@@ -7585,7 +7585,19 @@ var m = reactDomExports;
   client.hydrateRoot = m.hydrateRoot;
 }
 function App() {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-40 w-72 flex items-center justify-center bg-background", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium", children: "Diffusion Studio" }) });
+  reactExports.useEffect(() => {
+    (async () => {
+      const [tab] = await chrome.tabs.query({
+        active: true,
+        lastFocusedWindow: true
+      });
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ["content-script.js"]
+      });
+    })();
+  }, []);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-40 w-72 flex items-center justify-center bg-background", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium", children: "Extension enabled" }) });
 }
 client.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })

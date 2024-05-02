@@ -1,30 +1,27 @@
 /**
- * Let apps know that the extension is installed
- */
-sessionStorage.setItem('ds.plugin.installed', 'true')
-
-/**
- * Propagate chrome extension events to window
- */
-chrome.runtime.onMessage.addListener(
-  function (request, sender) {
-    if (!sender.tab) {
-      window.postMessage(request, '*')
-    }
-  }
-);
-
-/**
- * Propagate window events to chrome exension if
- * they contain a type
+ * Propagate window events to service worker if they contain a type
  */
 async function handleMessage(event: MessageEvent<{ type: string }>) {
   // We only accept messages from ourselves
-  if (event.source != window) return;
+  if (event.source != window || !event.data.type) return;
 
-  if (event.data.type) {
-    await chrome.runtime.sendMessage(event.data);
-  }
+  /**
+   * Establish connection with background script
+   */
+  const port = chrome.runtime.connect({ name: 'content-script' });
+
+  /**
+   * Post message to service worker
+   */
+  port.postMessage(event.data);
+
+  /**
+   * propagate service worker responses to window and close port
+   */
+  port.onMessage.addListener(function (message) {
+    window.postMessage(message, '*');
+    port.disconnect();
+  });
 }
 
 window.addEventListener("message", handleMessage);

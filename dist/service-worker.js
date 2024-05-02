@@ -38,8 +38,8 @@ async function loadTab(id) {
     });
   });
 }
-chrome.runtime.onMessage.addListener(async function(message) {
-  if ((message == null ? void 0 : message.type) != "QUERY_TEXT" || !message.url || typeof message.url != "string")
+async function handleQueryText(port, message) {
+  if (!message.url || typeof message.url != "string")
     return;
   const match = matchUrl(message.url);
   let tab = await chrome.tabs.create({
@@ -54,6 +54,24 @@ chrome.runtime.onMessage.addListener(async function(message) {
   if (res[0].result) {
     chrome.tabs.remove(tab.id);
   }
-  [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-  await chrome.tabs.sendMessage(tab.id, { type: "QUERY_TEXT_RESPONSE", content: res[0].result });
-});
+  port.postMessage({ type: "QUERY_TEXT_RESPONSE", content: res[0].result });
+}
+async function handlePing(port, _) {
+  port.postMessage({ type: "PONG" });
+}
+function handlePortMessage(port) {
+  return async (message) => {
+    switch (message == null ? void 0 : message.type) {
+      case "QUERY_TEXT":
+        handleQueryText(port, message);
+        break;
+      case "PING":
+        handlePing(port);
+        break;
+    }
+  };
+}
+function runtimeListener(port) {
+  port.onMessage.addListener(handlePortMessage(port));
+}
+chrome.runtime.onConnect.addListener(runtimeListener);
